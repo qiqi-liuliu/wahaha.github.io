@@ -5,6 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Interactive Happy Birthday!</title>
     <style>
+      @keyframes randomJump {
+        0%,
+        100% {
+          transform: translate(0, 0);
+          animation-timing-function: ease-in-out;
+        }
+        25% {
+          transform: translate(-10%, 20%);
+          animation-timing-function: ease-in;
+        }
+        50% {
+          transform: translate(10%, -10%);
+          animation-timing-function: ease-out;
+        }
+        75% {
+          transform: translate(-5%, 10%);
+          animation-timing-function: ease-in-out;
+        }
+      }
+
+      @keyframes jumpUp {
+        0%,
+        100% {
+          transform: translateY(0);
+          animation-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+        }
+        50% {
+          transform: translateY(-100px); /* 跳动幅度可以根据需要调整 */
+          animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+      }
+
       body {
         margin: 0;
         height: 100vh;
@@ -27,31 +59,42 @@
         overflow: hidden;
         cursor: pointer;
         position: relative;
+        /*animation: randomJump 4s infinite;*/
+        animation: jumpUp 3s infinite;
       }
       .birthday-cake {
         width: 250px;
         height: auto;
       }
       .popup {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #d8b7b2;
+        position: fixed; /* 使用fixed定位以覆盖整个屏幕 */
+        top: 50%; /* 垂直居中 */
+        left: 50%; /* 水平居中 */
+        transform: translate(-50%, -50%); /* 使用CSS transform属性进行居中 */
+        background-color: #FFE384;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 80%;
-        max-width: 1000px;
-        height: 80%;
-        max-height: 600px;
+        max-width: 1000px; /* 限制最大宽度 */
+        height: auto; /* 高度根据内容自动调整 */
+        max-height: 80%; /* 限制最大高度 */
         text-align: left;
         display: none;
+        overflow-y: auto; /* 如果内容超出高度，显示滚动条 */
+        /* 确保popup在滚动时始终处于视窗中间，不随页面滚动 */
+        backface-visibility: hidden;
       }
       .popup p {
         font-size: 1.2em;
         line-height: 1.6;
       }
+      .popup .signature {
+ 	 	position: absolute; /* 使用绝对定位 */
+  		bottom: 20px; /* 距离底部20px */
+  		right: 20px; /* 距离右侧20px */
+  		/* 如果需要，可以添加额外的样式来美化签名，如字体样式等 */
+	  }
     </style>
   </head>
   <body>
@@ -66,24 +109,41 @@
     </div>
 
     <div class="popup" id="popup">
-      <h2>Happy Birthday!</h2>
+	<h2>“敲”给远方也许正在过生日的你</h2>
       <p>
-        Wishing you a day filled with happiness and a year filled with joy. May
-        your birthday be the start of a year filled with good health,
-        prosperity, and happiness. Here's to celebrating all the wonderful
-        moments that are yet to come! Cheers to you on your special day!
+		  见字如晤，展信舒颜。
+		  <br/>
+          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp哈喽哈喽，我想今年的这封信应该是不会丢了以这个方式的话。就是不知道你喜不喜欢（当然也希望和觉得你会喜欢。）
+          先吐槽下自己，写网页写的有点烂蛤（狡辩一下，毕竟真的没有很多时间，期末就是疯狂赶due，已经都要变成秃头了！！！一天天也不知道自己在瞎忙什么）
+          然后关于阿妮那两个抱枕，原本还不算是我的原计划哦，其实想给你买个那种定制冰箱贴，
+          但是就是一整个专属定制还是要10天（加钱都不行orz）根本来不及，于是我就问你等不等得住？
+          结果就是你等得住butttt我等不住了，也感觉还是当天送达比较有仪式感。
+          然后再说另一个——那个牙刷哦，我不是说想你生日礼物给我想的焦头烂额嘛，真的就是一个刷小红书刷的头晕。
+          躺床上发呆呢，突然看到一张床上挂着的之前和你的合影（ps：笑得很开心）一下子灵光乍现，选了这个牙刷（虽然只是我自己觉得好用的哦）
+          原因的话，我确实是想到一个很中二的台词“守护你的笑容!”
+          不知道会不会好直男hhhhhhhhh，如果会也没办法了，体谅下哥，一把年纪的工科男了，真的不知道送什么www！
+          其实我有好多想巴拉巴拉的，但是随着时间的打磨，貌似我喜欢线下聊天了呢（暗示）
+          <br/>
+		  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp虽然认识好久啦，但是在最后还是有些话想要祝福一下，可不是客套话哦.
+		  新的一年里呢，希望小紫宣吃好喝好玩好，
+		  天天开心，以及和对的人长长久久咯～
+		  咱们嘴里的碎碎念念都会变成身边的岁岁年年的。
+		  Happy Birthday！！！
+          <br/>
+        
+  		<button onclick="hidePopup()">From Six</button>
       </p>
-      <button onclick="hidePopup()">Close</button>
     </div>
 
     <script>
       var audio = document.getElementById("background-music");
-      var isPlaying = false; // 用于追踪音频播放状态
+      var isPlaying = false;
+      var isCardVisible = true;
 
       // 播放音乐并显示弹出窗口
       function playMusicAndShowPopup() {
-        toggleMusic(); // 切换音乐播放状态
-        showPopup(); // 显示弹出窗口
+        toggleMusic();
+        showPopup();
       }
 
       // 切换音乐播放状态
@@ -97,16 +157,25 @@
         }
       }
 
-      // 显示弹出窗口
+      // 显示弹出窗口并隐藏蛋糕卡片
       function showPopup() {
-        document.getElementById("popup").style.display = "block";
+        var popup = document.getElementById("popup");
+        popup.style.display = "block"; // 显示弹出窗口
+        // 由于使用固定定位和transform进行居中，这里无需调整大小
+        window.addEventListener("resize", adjustPopupSize); // 监听窗口大小变化
       }
 
-      // 隐藏弹出窗口
+      // 隐藏弹出窗口并重新显示蛋糕卡片
       function hidePopup() {
         document.getElementById("popup").style.display = "none";
-        // 可以选择在这里停止音乐
-        // toggleMusic();
+        document.querySelector(".birthday-card").style.display = "flex";
+        window.removeEventListener("resize", adjustPopupSize); // 移除窗口大小变化监听器
+      }
+
+      // 调整弹出窗口大小以适应屏幕
+      function adjustPopupSize() {
+        // 由于popup已经使用固定定位和transform进行居中，这里不需要进行调整
+        // 此函数可以根据实际情况决定是否保留或删除
       }
     </script>
   </body>
